@@ -1,0 +1,5 @@
+Pizza Heaven	Italian	10
+Tom's Tacos	Mexican	5
+Sandwich & Salad	Sandwich	5
+burgers burgers	burger bar	10
+grease pit	fast food	8
