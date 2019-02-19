@@ -74,10 +74,25 @@ class Guide
     end
   end
 
-  def list
+  def list(args=[])
+    sort_order = args.shift
+    sort_order = args.shift if sort_order == 'by'
+    sort_order = "name" unless ['name', 'cuisine', 'price'].include?(sort_order)
+
     output_action_header("Listing resturants")
     resturants = Resturant.saved_resturants
+    resturants.sort! do |r1, r2|
+      case sort_order
+      when 'name'
+        r1.name.downcase <=> r2.name.downcase
+      when 'cuisine'
+        r1.cuisine.downcase <=> r2.cuisine.downcase
+      when 'price'
+        r1.price.to_i <=> r2.price.to_i
+      end
+    end
     output_resturant_table(resturants)
+    puts "Sort by 'list name', 'list cuisine', 'list price'\n\n"
   end
 
   def add
