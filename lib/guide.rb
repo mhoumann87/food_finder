@@ -30,8 +30,8 @@ class Guide
 
     result = nil
     until result == :quit
-      action = get_action
-      result = do_action(action)
+      action, args = get_action
+      result = do_action(action, args)
     end
     conslusion
   end
@@ -52,17 +52,19 @@ class Guide
       puts "Actions: " + Guide::Config.actions.join(", ") unless action
       print "> "
       user_response = gets.chomp
-      action = user_response.downcase.strip
+      args = user_response.downcase.strip.split (" ")
+      action = args.shift
     end
-    return action
+    return action, args
   end
 
-  def do_action(action)
+  def do_action(action, args=[])
     case action
     when 'list'
       list
     when 'find'
-      puts "finding..."
+      keyword = args.shift
+      find(keyword)
     when 'add'
       add
     when 'quit'
@@ -70,6 +72,12 @@ class Guide
     else
       puts "\nI don't understand what you mean.\n"
     end
+  end
+
+  def list
+    output_action_header("Listing resturants")
+    resturants = Resturant.saved_resturants
+    output_resturant_table(resturants)
   end
 
   def add
@@ -82,10 +90,21 @@ class Guide
     end
   end
 
-  def list
-    output_action_header("Listing resturants")
-    resturants = Resturant.saved_resturants
-    output_resturant_table(resturants)
+  def find(keyword="")
+    output_action_header("Find a resturant")
+    if keyword
+      # search
+      resturants = Resturant.saved_resturants
+      found = resturants.select do |rest|
+        rest.name.downcase.include?(keyword.downcase) ||
+        rest.cuisine.downcase.include?(keyword.downcase) ||
+        rest.price.to_i <= keyword.to_i
+      end
+      output_resturant_table(found)
+    else
+      puts "Find using a key phrase to search the resturant list."
+      puts "Ex: 'find pizza', 'find Italian', 'find ita' "
+    end
   end
 
   private
